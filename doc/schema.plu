@@ -1,0 +1,79 @@
+@startuml
+skinparam monochrome true
+
+
+entity "beds" {
+	+ <u>id</u> [PK]
+	--
+	name
+	area
+}
+
+entity "seeds" {
+	+ <u>id</u> [PK]
+	--
+	+ family_id [FK]
+	+ month_id [FK]
+	--
+	name
+	area
+	sunlight
+	water
+	days
+}
+
+entity "month" {
+	+ <u>id</u> [PK]
+	--
+	name
+	avg_high
+	avg_low
+	water
+}
+
+entity "family"{
+	+ <u>id</u> [PK]
+	--
+	name
+	alias
+}
+
+entity "affects" <<(R,olive)>>{
+	beds_id [FK]
+	month_id [FK]
+	--
+	sunlight
+}
+
+
+entity "planted" <<(R,olive)>>{
+	beds_id[FK]
+	seeds_id[FK]
+	--
+	date
+}
+
+
+beds "m" ||-|| "n" seeds : planted
+beds "m" ||-|| "n" month : affects
+seeds "1" --* "m" family : member_of
+seeds --- month : do_best 
+
+@enduml
+entity "picked" <<(R,olive)>>{
+	beds_id [FK]
+	family_id [FK]
+	--
+	date
+}
+
+beds "m" ||-|| "n" family: picked
+aisle }-- department
+product ||-|| aisle
+product }-- coupon
+aisle_id --- price
+
+department "1" *-- "m" aisle : contains
+aisle "n" ||-|| "m" product : has
+product "1" --- "m" coupon : for
+

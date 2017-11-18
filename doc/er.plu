@@ -1,0 +1,118 @@
+@startuml
+graph ER {
+	layout=neato;
+	overlap="prism";
+
+	node [shape=box,]; beds; seeds; month; family;
+
+	node [shape=ellipse]; {node [label=<<u>id</u>>] b_id; s_id; m_id; f_id;}
+	node [shape=ellipse]; {node [label="name"] b_name; s_name; m_name; f_name;}
+	node [shape=ellipse]; {node [label="sunlight"] b_sunlight; s_sunlight;}
+	node [shape=ellipse]; {node [label="water"] s_water; m_water;}
+	node [shape=ellipse]; {node [label="area"] b_area; s_area;}
+	node [shape=ellipse]; {node [label="days"] s_harvest;}
+	node [shape=ellipse]; {node [label="avg_low"] m_avg_low;}
+	node [shape=ellipse]; {node [label="avg_high"] m_avg_high;}
+	node [shape=ellipse]; {node [label="alias"] f_alias;}
+	node [shape=ellipse]; {node [label="date"] bs_date; }
+#	node [shape=ellipse]; {node [label="date"] bs_date; bf_date;}
+
+# beds has location, soil_type, sunlight, water, area
+
+	beds -- b_id
+	beds -- b_name
+	beds -- b_area
+
+# seeds has area, sunlight, soil. water, harvest
+	seeds -- s_id
+	seeds -- s_name
+	seeds -- s_sunlight
+	seeds -- s_water
+	seeds -- s_area
+	seeds -- s_harvest
+
+# month has avg high, avg low, precipitation
+	month -- m_id
+	month -- m_name
+	month -- m_avg_high
+	month -- m_avg_low
+	month -- m_water
+
+# family has name, alias
+	family -- f_id
+	family -- f_name
+	family -- f_alias
+
+
+# an advertisement belongs to exactly one advertisements_type
+# an advertisement type can host many different advertisements
+
+# seed should be planted in at least one bed
+# each bed should have zero or more seeds
+	node [shape=diamond,style=filled,color=lightgrey]; 
+	node [label="planted"] bs
+	bs -- seeds [label="n", color="black:invis:black"]
+	bs -- beds [label="m"]
+	bs -- bs_date
+	
+
+# seed belong to exactly one family
+# family can have many seeds
+	node [shape=diamond,style=filled,color=lightgrey]; 
+	node [label="member_of"] sf
+	sf -- seeds [label="m",color="black:invis:black"]
+	sf -- family [label="1"]
+
+# customers make at least one purchase
+# a purchase is made by exactly one customer
+	node [shape=diamond,style=filled,color=lightgrey]; 
+	node [label="do_best"] sm
+	sm -- seeds [label="1",color="black:invis:black"]
+	sm -- month [label="1"]
+
+# a beds can have many family of crop
+# a family of crop can be in many beds
+	#node [shape=diamond,style=filled,color=lightgrey]; 
+	#node [label="picked"] bf
+	#bf -- beds [label="m"]
+	#bf -- family [label="n"]
+	#bf -- bf_date
+
+# the month affects the condiiton of the beds
+	node [shape=diamond,style=filled,color=lightgrey]; 
+	node [label="affects"] bm
+	bm -- beds [label="m"]
+	bm -- month [label="n",color="black:invis:black"]
+	bm -- b_sunlight
+}
+@enduml
+
+Foo -- Bar [color="black:invis:black"]
+
+node [shape=box,]; Bar; Foo;
+
+node [shape=diamond,style=filled,color=lightgrey]; "C-I"; "S-C"; "S-I";
+
+node [shape=ellipse]; {node [label="name"] name0; name1; name2;}
+
+	name0 -- course;
+	code -- course;
+	course -- "C-I" [label="n",len=1.00];
+	"C-I" -- institute [label="1",len=1.00];
+	institute -- name1;
+	institute -- "S-I" [label="1",len=1.00];
+	"S-I" -- student [label="n",len=1.00];
+	student -- grade;
+	student -- name2;
+	student -- number;
+	student -- "S-C" [label="m",len=1.00];
+	"S-C" -- course [label="n",len=1.00];
+
+node [shape=ellipse]; {node [label=<<u>name</u>>] name0; name1; name2;}
+
+	advertisements; 
+	advertisements_type; 
+	media_provider;
+	customers; 
+	purchases; 
+	You; 
