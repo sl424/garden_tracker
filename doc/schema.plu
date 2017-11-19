@@ -12,8 +12,8 @@ entity "beds" {
 entity "seeds" {
 	+ <u>id</u> [PK]
 	--
-	+ family_id [FK]
-	+ month_id [FK]
+	+ fid (family_id) [FK]
+	+ mid (month_id) [FK]
 	--
 	name
 	area
@@ -39,16 +39,16 @@ entity "family"{
 }
 
 entity "affects" <<(R,olive)>>{
-	beds_id [FK]
-	month_id [FK]
+	bid (beds_id) [FK]
+	mid (month_id) [FK]
 	--
 	sunlight
 }
 
 
 entity "planted" <<(R,olive)>>{
-	beds_id[FK]
-	seeds_id[FK]
+	bid (beds_id) [FK]
+	sid (seeds_id) [FK]
 	--
 	date
 }
@@ -60,6 +60,11 @@ seeds "1" --* "m" family : member_of
 seeds --- month : do_best 
 
 @enduml
+
+
+
+
+
 entity "picked" <<(R,olive)>>{
 	beds_id [FK]
 	family_id [FK]

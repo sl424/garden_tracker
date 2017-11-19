@@ -4,15 +4,6 @@ DROP TABLE IF EXISTS `month`;
 DROP TABLE IF EXISTS `family`;
 
 -- create tables  and relations
-create table seeds (
-	id int auto_increment primary key,
-	fid int,
-	name varchar(255) not null,
-	sunlight varchar(255) not null,
-	water float not null,
-	area int not null
-	foreign key (fid) references family(id)
-) ENGINE=InnoDB
 
 create table beds (
 	id int auto_increment primary key,
@@ -24,6 +15,18 @@ create table family (
 	id int auto_increment primary key,
 	name varchar(255) not null,
 	alias varchar(255) not null
+) ENGINE=InnoDB
+
+create table seeds (
+	id int auto_increment primary key,
+	fid int nut null,
+	name varchar(255) not null,
+	do_best int not null,
+	sunlight varchar(255) not null,
+	water float not null,
+	area int not null,
+	foreign key (fid) references family(id),
+	foreign key (do_best) references month(id)
 ) ENGINE=InnoDB
 
 create table month (
@@ -39,8 +42,8 @@ create table planted (
 	bid int not null,
 	date_planted date not null,
 	unique key (sid, bid),
-	foreign (sid) references seeds(id),
-	foreign (bid) references beds(id)
+	foreign key (sid) references seeds(id),
+	foreign key (bid) references beds(id)
 
 ) ENGINE=InnoDB
 
@@ -48,8 +51,8 @@ create table affects (
 	mid int not null,
 	bid int not null,
 	sunlight int not null,
-	foreign (mid) references month(id),
-	foreign (bid) references beds(id)
+	foreign key (mid) references month(id),
+	foreign key (bid) references beds(id)
 ) ENGINE=InnoDB
 
 
@@ -63,13 +66,23 @@ values
 ('Liliaceae', 'onion');
 
 --populate seeds
-insert into seeds (fid, name, sunlight, water, area)
+insert into seeds (fid, name, do_best, sunlight, water, area)
 values
-((select id from family where name='Solanaceae'), 'tomato', '8', '0.2', '432'),
-((select id from family where name='Fabaceae'), 'pea', '6', '0.4', '9'),
-((select id from family where name='Brassicacae'), 'brocalli', '7', '0.5', '216'),
-((select id from family where name='Cucurbitaceae'), 'cucumber', '8', '0.3', '432'),
-((select id from family where name='Liliaceae'), 'onion', '4', '0.3', '15');
+((select id from family where name='Solanaceae'), 'tomato', 
+	(select id from month where name='apr'),
+	'8', '0.2', '432'),
+((select id from family where name='Fabaceae'), 'pea', 
+	(select id from month where name='may'),
+	'6', '0.4', '9'),
+((select id from family where name='Brassicacae'), 'brocalli', 
+	(select id from month where name='jun'),
+	'7', '0.5', '216'),
+((select id from family where name='Cucurbitaceae'), 'cucumber', 
+	(select id from month where name='jul'),
+	'8', '0.3', '432'),
+((select id from family where name='Liliaceae'), 'onion', 
+	(select id from month where name='aug'),
+	'4', '0.3', '15');
 
 --populate  beds
 insert into beds (name, area)
