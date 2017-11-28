@@ -1,0 +1,115 @@
+body {
+	font-family:'lucida grande', tahoma, verdana, arial, sans-serif;
+	font-size:15px;
+	background-color: white;
+}
+
+article{
+	margin: 0 auto;
+	padding: 10px;
+}
+
+input[class="number"] {
+	width: 90px;
+	padding 2px;
+}
+
+input[class="string"]{
+	width: 200px;
+}
+
+.one, .four {
+	width: 200px;
+}
+
+.two, .three, .five {
+	width: 90px;
+}
+
+
+#messages{
+	color: red;
+	font: 16px bold;
+	padding: 10px;
+}
+
+#wrap {
+	width: 1000px;;
+	margin: 0 auto;
+	border: 4px double white;
+	background-color: white;
+}
+
+a { 
+	color: #548dc4;
+	text-decoration: none;
+}
+
+h1, h2 {
+	text-align: center;
+}
+
+h1 a {
+	font-size: 12px;
+	float: right;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+img {
+	border: 0;
+}
+
+.ok { 
+	background-color: #0a8819; 
+	color: white; 
+	padding: 5px;
+}
+
+input.invalid {
+	background: red;
+	color: #FDFDFD;
+}
+
+#message {
+	width: 100%;
+}
+
+table{ 
+	border-collapse: collapse; 
+	border: 1px solid #CCB;
+	background-color: lightgrey;
+	width: 100%;
+}
+
+table tr {
+	border-bottom: 1px solid #DDD;
+}
+
+table>tbody tr:hover {
+	background-color: #888888;
+	color: white;
+}
+
+table>tbody tr:hover a {
+	color: white;
+}
+
+table th {
+	background: #E5E5E5;
+	border: 1px solid #D5D5D5;
+	color: #555;
+	text-align: left;
+	padding-left: 5px;
+	padding-right: 0px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	white-space: nowrap; 
+}
+
+table td {
+	padding: 5px;
+	border: 1px solid #E0E0E0;
+}
