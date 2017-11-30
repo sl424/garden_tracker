@@ -1,13 +1,15 @@
  //Full texts		id	fid		name	do_best		sunlight	water		areai
 var msg = document.getElementById('messages');
-var input = ['name','fid','do_best','sunlight','water','area'];
-var ph = ['name', 'fid', 'do_best-month', 'sunlight-hours','water-in','area-in2' ];
-var type = ['string', 'string', 'string', 'number', 'number', 'number'];
+var input = ['bid', 'mid','sunlight'];
+var ph = ['bid', 'mid','sunlight-hrs'];
+var type = ['string', 'string', 'number'];
 
-var newhead = ['name','fid','do_best','sunlight','water','area','action'];
-var update = ['u-name', 'u-fid','u-do_best','u-sunlight','u-water', 'u-area'];
-var body = ['id','name','fid','do_best','sunlight','water','area'];
-var numcols = 7;
+var newhead = ['bid', 'mid','sunlight','action'];
+var fhead = ['bid', 'mid','sunlight',''];
+var update = ['u-bid', 'u-mid','u-sunlight'];
+var body = ['id','bid', 'mid','sunlight'];
+var search = ['s-bid', 's-mid','s-sunlight'];
+var numcols = 4;
 //
 // Following constructor were modified from editablegrid project
 // source 
@@ -17,9 +19,6 @@ var numcols = 7;
 var valid = [ 
 		new StringValidator(), 
 		new StringValidator(), 
-		new StringValidator(), 
-		new NumberCellValidator("integer"),
-		new NumberCellValidator("float"),
 		new NumberCellValidator("integer")
 		];
 
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function(){
 // row data to populate the input fields
 ****************************************/
 function addForm(divfield,head,row){
-	var numcols = 6;
+	var numcols = 3;
 	var form = document.createElement('form');
 	form.method = "post";
 	if ( row )
@@ -76,9 +75,10 @@ function addForm(divfield,head,row){
 /****************************************
 // create table header and assign class name to each column
 ****************************************/
-var cols = ['one','two','three','four','five','six','seven'];
-var numcols = 7;
+var cols = ['one','two','three','four'];
+var numcols = 4;
 var table = document.createElement('table');
+
 var row = document.createElement('tr');
 for( var i = 0; i < numcols; ++i ) {
 	var cell = document.createElement('th');
@@ -88,6 +88,73 @@ for( var i = 0; i < numcols; ++i ) {
 }
 table.appendChild(row);
 
+var row2 = document.createElement('tr');
+for( var i = 0; i < numcols-1; ++i ) {
+	var cell = document.createElement('th');
+	var input = document.createElement('input');
+	input.id = search[i];
+	input.placeholder = 'filter '+fhead[i];
+	input.setAttribute('type', 'text');
+	input.setAttribute('width','100%');
+	input.onkeypress = function (e) {searchButton(e);};
+	cell.appendChild(input);
+	row2.appendChild(cell);
+}
+table.appendChild(row2);
+
+function searchButton(e){
+	if (e.keyCode == 13) {
+	var req = new XMLHttpRequest();
+	var payload = {
+		"bid":document.getElementById("s-bid").value,
+		"mid":document.getElementById("s-mid").value,
+		"sunlight":document.getElementById("s-sunlight").value
+	};
+	req.open('POST', "http://52.36.73.75:3000/affects/all", true);
+	//req.open('POST', "http://httpbin.org/post", true);
+	req.setRequestHeader('Content-Type','application/json');
+	req.addEventListener('load',function(){
+		if ( req.status >= 200 && req.status < 400 ) {
+			var xhr = JSON.parse(req.responseText);
+			//refreshRow(xhr);
+			filterRow(xhr);
+			console.log("search result: ", xhr);
+			var msg = document.getElementById('messages');
+			msg.textContent = "search succesful";
+		}
+		else{ console.log('Error',+ req.statusText);
+			var msg = document.getElementById('messages');
+			msg.textContent = req.statusText;
+		}
+	});
+	req.send( JSON.stringify(payload) );
+	};
+}
+
+function filterRow(xhr){
+		var set = [];
+		for ( var i = 0; i < xhr.results.length; i++ ) {
+			set.push(xhr.results[i].id+'');
+		}
+		console.log(set);
+		console.log(xhr.results);
+		console.log('hello');
+
+	var els = document.getElementsByClassName('data');
+	console.log(els.length);
+	for (var i = 0; i < els.length; i++) {
+		//if (els[i].getAttribute('id') in set){
+		if (set.indexOf(els[i].getAttribute('id')) > -1){
+			els[i].style.display = '';
+			//console.log(els[i].getAttribute('id'));
+		} else {
+			console.log(els[i].getAttribute('id'));
+			els[i].style.display = 'none';
+		}
+	}
+}
+
+
 
 /****************************************
  * async call to retrive data from server
@@ -96,7 +163,9 @@ table.appendChild(row);
 document.addEventListener('DOMContentLoaded', bindButton);
 function bindButton(){
 	var req = new XMLHttpRequest();
-	req.open("GET", "http://52.36.73.75:3000/seeds/all", true);
+	//var payload = {};
+	req.open("GET", "http://52.36.73.75:3000/affects/all", true);
+	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
 		if ( req.status >= 200 && req.status < 400 ) {
 			var xhr = JSON.parse(req.responseText);
@@ -110,6 +179,7 @@ function bindButton(){
 		msg.textContent = req.statusText;}
 	});
 	req.send(null);
+	//req.send( JSON.stringify(payload) );
 };
 
 /****************************************
@@ -118,32 +188,20 @@ function bindButton(){
 function addRow(xhr){
 	for ( var i = 0; i < xhr.results.length; i++ ) {
 		var row = document.createElement('tr');
+		row.className = 'data';
 		row.setAttribute('id',xhr.results[i].id);
 
-		var name = document.createElement('td');
-		name.textContent = xhr.results[i].name;
-		row.appendChild(name);
+		var bid = document.createElement('td');
+		bid.textContent = xhr.results[i].bid;
+		row.appendChild(bid);
 
-		var fid = document.createElement('td');
-		fid.textContent = xhr.results[i].fid;
-		row.appendChild(fid);
+		var mid = document.createElement('td');
+		mid.textContent = xhr.results[i].mid;
+		row.appendChild(mid);
 
-		var do_best = document.createElement('td');
-		do_best.textContent = xhr.results[i].do_best;
-		row.appendChild(do_best);
-
-		//date.textContent = xhr.results[i].date.slice(0,10);
 		var sunlight = document.createElement('td');
 		sunlight.textContent = xhr.results[i].sunlight;
 		row.appendChild(sunlight);
-
-		var water = document.createElement('td');
-		water.textContent = xhr.results[i].water;
-		row.appendChild(water);
-
-		var area = document.createElement('td');
-		area.textContent = xhr.results[i].area;
-		row.appendChild(area);
 
 		// delete button, edit button, hidden key forms
 		var dcell = document.createElement('td');
@@ -211,14 +269,11 @@ function updateRow(e){
 	var req = new XMLHttpRequest();
 	var payload = {
 		"id":id,
-		"name":document.getElementById("u-name").value,
-		"fid":document.getElementById("u-fid").value,
-		"do_best":document.getElementById("u-do_best").value,
-		"sunlight":document.getElementById("u-sunlight").value,
-		"water":document.getElementById("u-water").value,
-		"area":document.getElementById("u-area").value
+		"bid":document.getElementById("u-bid").value,
+		"mid":document.getElementById("u-mid").value,
+		"sunlight":document.getElementById("u-sunlight").value
 	};
-	req.open('PUT', "http://52.36.73.75:3000/seeds/"+payload.id, true);
+	req.open('PUT', "http://52.36.73.75:3000/affects/"+payload.id, true);
 	//req.open('POST', "http://httpbin.org/post", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
@@ -250,17 +305,11 @@ function refreshRow( xhr ) {
 	var row = document.getElementById(id);
 	//console.log(row);
 	var current = row.firstChild;
-	current.textContent = xhr.results[0].name;
+	current.textContent = xhr.results[0].bid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].fid;
+	current.textContent = xhr.results[0].mid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].do_best;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].sunlight
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].water;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].area;
+	current.textContent = xhr.results[0].sunlight;
 	//remove update form
 	var updatediv = document.getElementById('update');
 	if ( updatediv.firstChild ){
@@ -280,7 +329,7 @@ function removeRow(event) {
 	var id = row.getAttribute('id');
 	//console.log("removing row id: ",id);
 	var req = new XMLHttpRequest();
-	req.open('DELETE', "http://52.36.73.75:3000/seeds/"+id, true);
+	req.open('DELETE', "http://52.36.73.75:3000/affects/"+id, true);
 	req.addEventListener('load',function(){
 					if ( req.status >= 200 && req.status < 400 ) {
 						var xhr = JSON.parse(req.responseText);
@@ -301,19 +350,13 @@ function removeRow(event) {
 }
 
 function updateCheck(){
-				var c = document.getElementById("u-name");
-				var d = document.getElementById("u-fid");
-				var e = document.getElementById("u-do_best");
-				var f = document.getElementById("u-sunlight");
-				var g = document.getElementById('u-water');
-				var h = document.getElementById('u-area');
+				var c = document.getElementById("u-bid");
+				var d = document.getElementById("u-mid");
+				var g = document.getElementById("u-sunlight");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
 						!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -321,19 +364,13 @@ function updateCheck(){
 }
 
 function addCheck(){
-				var c = document.getElementById("name");
-				var d = document.getElementById("fid");
-				var e = document.getElementById("do_best");
-				var f = document.getElementById("sunlight");
-				var g = document.getElementById('water');
-				var h = document.getElementById('area');
+				var c = document.getElementById("bid");
+				var d = document.getElementById("mid");
+				var g = document.getElementById("sunlight");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
 						!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -356,16 +393,13 @@ function bindPost(){
 					var req = new XMLHttpRequest();
 
 					var payload = {
-						"name":document.getElementById("name").value,
-						"fid":document.getElementById("fid").value,
-						"do_best":document.getElementById("do_best").value,
-						"sunlight":document.getElementById("sunlight").value,
-						"water":document.getElementById("water").value,
-						"area":document.getElementById("area").value 
+						"bid":document.getElementById("bid").value,
+						"mid":document.getElementById("mid").value,
+						"sunlight":document.getElementById("sunlight").value
 					};
 
 					//console.log(payload);
-					req.open('POST', "http://52.36.73.75:3000/seeds", true);
+					req.open('POST', "http://52.36.73.75:3000/affects", true);
 					//req.open('POST', "http://httpbin.org/post", true);
 					req.setRequestHeader('Content-Type','application/json');
 					req.addEventListener('load',function(){
@@ -389,6 +423,7 @@ function bindPost(){
 };
 
 function clearInput() {
+var input = ['bid, mid','sunlight'];
 	input.forEach( function(form) {
 		document.getElementById(form).value = "";
 	});

@@ -24,6 +24,17 @@ var owaID = key.owaID;
 var appID = key.appID;
 var city = 'Corvallis';
 var state = 'OR';
+app.use('/seeds', require('./seeds.js')); 
+app.use('/beds', require('./beds.js')); 
+app.use('/family', require('./family.js')); 
+app.use('/month', require('./month.js')); 
+app.use('/affects', require('./affects.js')); 
+
+
+
+app.get('/',function(req,res){
+  res.render('home');
+});
 
 /*
 app.get('/reset-table',function(req,res,next){
@@ -43,14 +54,7 @@ app.get('/reset-table',function(req,res,next){
   });
 });
 */
-app.use('/seeds', require('./seeds.js')); 
-
-
-
 /*
-app.get('/',function(req,res){
-  res.render('garden');
-});
 
 app.get('/show',function(req,res,next){
   var context = {};

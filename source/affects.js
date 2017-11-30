@@ -3,15 +3,15 @@ module.exports = function(){
 	var router = express.Router(); 
 	var mysql = require('./connection.js');
 
-	function getID_family(context, name,complete){
-		mysql.pool.query( 'SELECT * FROM family WHERE name=?', [name],
+	function getID_beds(context, name,complete){
+		mysql.pool.query( 'SELECT * FROM beds WHERE name=?', [name],
 				function(err, rows, fields){
 					if ( err ) {
 						res.status(400);
 						res.write(JSON.stringify(err));                              
 						res.end();                                                     
 					}
-					if (rows[0]) { context.family = rows[0].id; } else {context.month='NULL';}
+					if (rows[0]) { context.beds = rows[0].id; } else {context.month='NULL';}
 					complete();
 				});
 	}
@@ -29,9 +29,8 @@ module.exports = function(){
 				});
 	}
 
-	function getSeed(res, context, complete,id){
-		mysql.pool.query('SELECT s.id, s.name, f.name as fid, m.name as do_best, s.sunlight, s.water, s.area FROM seeds s INNER JOIN family f ON s.fid=f.id '
-				+ 'INNER JOIN month m ON s.do_best=m.id WHERE s.id='+id,
+	function getAffect(res, context, complete,id){
+		mysql.pool.query('SELECT b.name as bid, m.name as mid, sunlight FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id WHERE a.id='+id,
 				function(err, rows, fields){
 			if(err){                                                         
 				res.status(400);
@@ -43,9 +42,12 @@ module.exports = function(){
 		}); 
 	}
 
-	function getSeeds(res, context, complete){
+	function getAffects(res, context, complete){
+		/*
 		var sqlstm = 'SELECT s.id, s.name, f.name as fid, m.name as do_best, s.sunlight, s.water, s.area FROM seeds s INNER JOIN family f ON s.fid=f.id INNER JOIN month m ON s.do_best=m.id';
 		mysql.pool.query(sqlstm,
+		*/
+		mysql.pool.query('SELECT a.id, b.name as bid, m.name as mid, sunlight FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id',
 				function(err, rows, fields){
 			if(err){                                                         
 				res.status(400);
@@ -74,8 +76,8 @@ module.exports = function(){
 		fin(sqlstm);
 	}
 
-	function postSeeds(res, req, context, complete){
-		var sqlstm = 'select * from (SELECT s.id, s.name, f.name as fid, m.name as do_best, s.sunlight, s.water, s.area FROM seeds s INNER JOIN family f ON s.fid=f.id INNER JOIN month m ON s.do_best=m.id) as tmp1';
+	function postAffects(res, req, context, complete){
+		var sqlstm = 'select * from (SELECT b.name as bid, m.name as mid, sunlight FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id) as tmp1';
 		joinstm(sqlstm, req, fin);
 		function fin(sqlstm2){
 			console.log(sqlstm2);
@@ -94,16 +96,16 @@ module.exports = function(){
 		}
 	}
 
-	function addSeeds(res,req,context, complete){
+	function addAffects(res,req,context, complete){
 		var c = {};
 		var cc=0;
-		getID_family(c, req.body.fid, complete2);
-		getID_month(c, req.body.do_best, complete2);
+		getID_beds(c, req.body.bid, complete2);
+		getID_month(c, req.body.mid, complete2);
 		function complete2(){
 			cc++;
 			if (cc >=2){ console.log(c); 
-		mysql.pool.query('INSERT INTO seeds (`fid`,`name`,`do_best`,`sunlight`,`water`,`area`) values (?,?,?,?,?,?)', 
-				[c.family, req.body.name,c.month, req.body.sunlight, req.body.water, req.body.area ], 
+		mysql.pool.query('INSERT INTO affects (`bid`,`mid`,`sunlight`) values (?,?,?)', 
+				[c.beds, c.month, req.body.sunlight], 
 				function(err, result){
 					if ( err ) {
 						res.status(400);
@@ -111,35 +113,22 @@ module.exports = function(){
 						res.end();                                                     
 					}
 					else if ( result.affectedRows ){
-							 getSeed(res,context,complete,result.insertId);
-							 /*
-						mysql.pool.query( 'SELECT * FROM seeds WHERE id=?',
-							[result.insertId],
-							function(err, rows, fields){
-								if ( err ) {
-									next( err );
-									return;
-								}
-								context.results = rows;
-								complete();
-								//console.log(rows);
-							});
-						*/
+							 getAffect(res,context,complete,result.insertId);
 					}
 				});
 	} }}
 
-	function updateSeeds(res, req, context, fin,id){
+	function updateAffects(res, req, context, fin,id){
 		var c = {};
 		var cc=0;
-		getID_family(c, req.body.fid, complete2);
-		getID_month(c, req.body.do_best, complete2);
+		getID_beds(c, req.body.bid, complete2);
+		getID_month(c, req.body.mid, complete2);
 		function complete2(){
 			cc++;
 			if (cc >=2){ console.log(c); 
 
-				mysql.pool.query("UPDATE seeds SET fid=?, name=?, do_best=?, sunlight=?, water= ?, area=? WHERE id=? ",
-						[c.family,req.body.name,c.month, req.body.sunlight, req.body.water, req.body.area, req.body.id ], 
+				mysql.pool.query("UPDATE affects SET bid=?, mid=?, sunlight=? WHERE id=? ",
+						[c.beds, c.month, req.body.sunlight], 
 						function(err, result){
 							if(err){ 
 						res.status(400);
@@ -147,7 +136,7 @@ module.exports = function(){
 						res.end();                                                     
 							}
 							else if ( result.affectedRows ){
-							 getSeed(res,context,fin,id);
+							 getAffect(res,context,fin,id);
 								/*
 								mysql.pool.query( 'SELECT * FROM seeds WHERE id=?', [id],
 									function(err, rows, fields){ if ( err ) { next( err ); return; }
@@ -165,14 +154,14 @@ module.exports = function(){
 
 router.get('/',function(req,res){
 	var context = {};
-	context.jsscript = "js-seeds.js";
-	context.header = 'seed collection';
+	context.jsscript = "js-affects.js";
+	context.header = 'affects';
   res.render('table',context);
 });
 
 router.get('/all',function(req, res,next){
 	var context= {};
-	getSeeds(res, context, complete);
+	getAffects(res, context, complete);
 	function complete(){
     //res.render('garden', context);
 		res.json(context);
@@ -182,7 +171,7 @@ router.get('/all',function(req, res,next){
 
 router.post('/all',function(req, res,next){
 	var context= {};
-	postSeeds(res, req, context, complete);
+	postAffects(res, req, context, complete);
 	function complete(){
     //res.render('garden', context);
 		res.json(context);
@@ -192,7 +181,7 @@ router.post('/all',function(req, res,next){
 
 router.post('/',function(req,res,next){
   var context = {};
-	addSeeds(res,req, context, complete);
+	addAffects(res,req, context, complete);
 	function complete(){
 		res.json(context);
 	}
@@ -201,7 +190,7 @@ router.post('/',function(req,res,next){
 router.put('/:id',function(req,res,next){
   var context = {};
 	var cb = 0;
-	updateSeeds(res, req, context, complete,req.params.id);
+	updateAffects(res, req, context, complete,req.params.id);
 	function complete(){
 		res.json(context);
 	}
@@ -210,7 +199,7 @@ router.put('/:id',function(req,res,next){
 
 router.delete('/:id',function(req,res,next){
   var context = {};
-  mysql.pool.query("delete from seeds WHERE id=? ",
+  mysql.pool.query("delete from affects WHERE id=? ",
     [req.params.id],
     function(err, result){
 			console.log(result);

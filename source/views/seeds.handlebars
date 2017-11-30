@@ -8,15 +8,14 @@
 <link rel="stylesheet" type="text/css" href="/css/simple.css" >
 <link rel="stylesheet" type="text/css" href="/css/pure-min.css" >
 <script src="editablegrid_validators.js"></script>
-<!--
 <script src="js-seeds.js"></script>
--->
 </head>
 
 <body>
 
 <div id="wrap">
 	<header>
+
 		<div class="header">
 			<div class="home-menu pure-menu pure-menu-horizontal pure-menu-fixed">
 				<ul class="pure-menu-list">
@@ -26,47 +25,31 @@
 					<li class="pure-menu-item"><a href="http://52.36.73.75:3000/family" class="pure-menu-link">family</a></li> 
 					<li class="pure-menu-item"><a href="http://52.36.73.75:3000/month" class="pure-menu-link">month</a></li> 
 					<li class="pure-menu-item"><a href="http://52.36.73.75:3000/planted" class="pure-menu-link">planted</a></li> 
-					<li class="pure-menu-item"><a href="http://52.36.73.75:3000/affects" class="pure-menu-link">affects</a></li> 
+					<li class="pure-menu-item"><a href="http://52.36.73.75:3000/picked" class="pure-menu-link">picked</a></li> 
 				</ul>
 			</div>
 		</div>
 
+
 		<div>
 			<h1>---</h1>
 			<h1>Garden Tracker</h1>
+			<h2>Seed Collection</h2>
 		</div>
 	</header>
 
 	<section>
 		<article>
-			<p>Outline</p>
-			<p>I propose a database to track the plants grown in the backyard garden. There will be several raised beds
-	and hundreds of seeds. I hope it can be used to streamline planting and maximize productivity of the garden.
-	
-	You can follow to the link to each of the table to interact with the database.
-	</p>
+		<span>Message: <span id="messages"></span></span>
 		</article>
-
 		<article>
-			<p>Entities:<p>
-
-			<ul>
-				<li> • Beds - location, soil type, sunlight, water, size, season,
-				<li> • Seeds - seed spacing, row spacing, cycle, sunlight, soil, water, harvest
-				<li> • Season - Month, avg high, avg low, precipitation
-				<li> • Plant Family - name, alias
-			</ul>
+		<div id="userinput"></div>
 		</article>
-
 		<article>
-			<p>Relationship:</p>
-			<ul>
-				<li> • many-to-many: seeds can be planted in any suitable beds and a bed can contain multiple different plants.
-				<li> • one-to-many: each seed is from a plant family and a family can have multiple seeds.
-				<li> • one-to-one: each seed is best planted in the appropriate season.
-				<li> • many-to-many: track the history of each beds and the plant family to maximize crop rotation
-				</ul>
-
+		<div class="testgrid" id="tablecontent"></div>
+		</article>
+		<article>
+		<div id="update"></div>
 		</article>
 	</section>
 
