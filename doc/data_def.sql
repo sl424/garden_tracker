@@ -41,6 +41,7 @@ create table seeds (
 ) ENGINE=InnoDB;
 
 create table planted (
+	id int auto_increment primary key,
 	sid int not null,
 	bid int not null,
 	date_planted date not null,
@@ -50,9 +51,11 @@ create table planted (
 ) ENGINE=InnoDB;
 
 create table affects (
+	id int auto_increment primary key,
 	mid int not null,
 	bid int not null,
 	sunlight int not null,
+	unique key (mid, bid),
 	foreign key (mid) references month(id),
 	foreign key (bid) references beds(id)
 ) ENGINE=InnoDB;
