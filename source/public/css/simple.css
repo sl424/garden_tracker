@@ -5,6 +5,7 @@ input[type="text"] {
 	-moz-box-sizing: border-box;
 }
 
+
 body {
 	font-family:'lucida grande', tahoma, verdana, arial, sans-serif;
 	font-size:15px;
@@ -369,8 +370,9 @@ a.pure-button-primary {
 body {
     font-size: 16px;
 }
-input {
+select, input {
     font-size: 14px;
+    padding: 0.5em;
 }
 
 /* We want to give the content area some more padding */

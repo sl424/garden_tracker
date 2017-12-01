@@ -29,6 +29,8 @@ app.use('/beds', require('./beds.js'));
 app.use('/family', require('./family.js')); 
 app.use('/month', require('./month.js')); 
 app.use('/affects', require('./affects.js')); 
+app.use('/planted', require('./planted.js')); 
+app.use('/planning', require('./planning.js')); 
 
 
 

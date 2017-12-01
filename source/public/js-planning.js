@@ -1,15 +1,17 @@
  //Full texts		id	fid		name	do_best		sunlight	water		areai
 var msg = document.getElementById('messages');
-var input = ['name','fid','do_best','sunlight','water','area'];
-var ph = ['name', 'fid', 'do_best-month', 'sunlight-hours','water-in','area-in2' ];
-var type = ['string', 'string', 'string', 'number', 'number', 'number'];
 
-var newhead = ['name','fid','do_best','sunlight','water','area','action'];
-var fhead = ['name','fid','do_best','sunlight','water','area',''];
-var update = ['u-name', 'u-fid','u-do_best','u-sunlight','u-water', 'u-area'];
-var body = ['id','name','fid','do_best','sunlight','water','area'];
-var search = ['s-name', 's-fid','s-do_best','s-sunlight','s-water', 's-area'];
-var numcols = 7;
+var input = ['bid', 'mid','sunlight'];
+var ph = ['bid', 'mid','sunlight-hrs'];
+var type = ['string', 'string', 'number'];
+
+var newhead = ['bid', 'mid','seeds', 'family','action'];
+var fhead = ['bid', 'mid','seeds', 'family',''];
+
+//var body = ['id','bid', 'mid','sunlight'];
+var update = ['u-bid', 'u-mid','u-sunlight'];
+var search = ['s-bid', 's-mid','s-seeds', 's-family'];
+var numcols = 5;
 //
 // Following constructor were modified from editablegrid project
 // source 
@@ -19,9 +21,6 @@ var numcols = 7;
 var valid = [ 
 		new StringValidator(), 
 		new StringValidator(), 
-		new StringValidator(), 
-		new NumberCellValidator("integer"),
-		new NumberCellValidator("float"),
 		new NumberCellValidator("integer")
 		];
 
@@ -39,6 +38,8 @@ document.addEventListener('DOMContentLoaded', function(){
 	input.value = "Add Item";
 	input.id = "addNew";
 	document.getElementById('userform').appendChild(input);
+	userdiv.style.visibility="hidden";
+	//document.getElementById(id).style.visibility = "hidden";
 });
 
 /****************************************
@@ -47,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function(){
 // row data to populate the input fields
 ****************************************/
 function addForm(divfield,head,row){
-	var numcols = 6;
+	var numcols = 3;
 	var form = document.createElement('form');
 	form.method = "post";
 	if ( row )
@@ -57,27 +58,14 @@ function addForm(divfield,head,row){
 	//form.setAttribute('method',"post");
 	if ( row )
 		var current = row.firstChild;
-
 	for ( var i = 0; i < numcols; i++ ) {
 		var input = document.createElement("input");
-
-		if (head[i] == 'fid' || head[i] == 'u-fid') { 
-			input = document.createElement("select");
-			setOption(input, 'family', row ? current.textContent : '');
-		}
-		if (head[i] == 'do_best' || head[i] == 'u-do_best') { 
-			input = document.createElement("select");
-			setOption(input, 'month', row ? current.textContent : '' );
-		}
-
 		//assign type to classname to format input width
 		input.className = type[i];
 		input.type = "text";
 		input.id = head[i];
 		input.placeholder = ph[i];
 		//assign validator function to each input field
-		//
-
 		input.check = valid[i];
 		if (row) {
 			input.value = current.textContent;
@@ -88,38 +76,11 @@ function addForm(divfield,head,row){
 	divfield.appendChild(form);
 }
 
-
-function setOption(el,tname,defaultval){
-	var req = new XMLHttpRequest();
-	req.open("GET", "http://52.36.73.75:3000/"+tname+"/all", true);
-	req.setRequestHeader('Content-Type','application/json');
-	req.addEventListener('load',function(){
-		if ( req.status >= 200 && req.status < 400 ) {
-			var xhr = JSON.parse(req.responseText);
-			fillOptions(xhr);
-		}
-		else{ console.log('Error',+ req.statusText);
-		var msg = document.getElementById('messages');
-		msg.textContent = req.statusText;}
-	});
-	req.send(null);
-
-	function fillOptions(xhr){
-		if (defaultval){
-			el.options.add( new Option(defaultval, defaultval) );
-		}
-		for ( var i = 0; i < xhr.results.length; i++ ) {
-			el.options.add( new Option(xhr.results[i].name,xhr.results[i].name) );
-		}
-	}
-}
-
-
 /****************************************
 // create table header and assign class name to each column
 ****************************************/
-var cols = ['one','two','three','four','five','six','seven'];
-var numcols = 7;
+var cols = ['one','two','three','four','five'];
+var numcols = 5;
 var table = document.createElement('table');
 
 var row = document.createElement('tr');
@@ -149,14 +110,12 @@ function searchButton(e){
 	if (e.keyCode == 13) {
 	var req = new XMLHttpRequest();
 	var payload = {
-		"name":document.getElementById("s-name").value,
-		"fid":document.getElementById("s-fid").value,
-		"do_best":document.getElementById("s-do_best").value,
-		"sunlight":document.getElementById("s-sunlight").value,
-		"water":document.getElementById("s-water").value,
-		"area":document.getElementById("s-area").value
+		"bid":document.getElementById("s-bid").value,
+		"mid":document.getElementById("s-mid").value,
+		"seeds":document.getElementById("s-seeds").value,
+		"family":document.getElementById("s-family").value,
 	};
-	req.open('POST', "http://52.36.73.75:3000/seeds/all", true);
+	req.open('POST', "http://52.36.73.75:3000/planning/all", true);
 	//req.open('POST', "http://httpbin.org/post", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
@@ -210,7 +169,7 @@ document.addEventListener('DOMContentLoaded', bindButton);
 function bindButton(){
 	var req = new XMLHttpRequest();
 	//var payload = {};
-	req.open("GET", "http://52.36.73.75:3000/seeds/all", true);
+	req.open("GET", "http://52.36.73.75:3000/planning/all", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
 		if ( req.status >= 200 && req.status < 400 ) {
@@ -237,33 +196,26 @@ function addRow(xhr){
 		row.className = 'data';
 		row.setAttribute('id',xhr.results[i].id);
 
-		var name = document.createElement('td');
-		name.textContent = xhr.results[i].name;
-		row.appendChild(name);
+		var bid = document.createElement('td');
+		bid.textContent = xhr.results[i].bid;
+		row.appendChild(bid);
 
-		var fid = document.createElement('td');
-		fid.textContent = xhr.results[i].fid;
-		row.appendChild(fid);
+		var mid = document.createElement('td');
+		mid.textContent = xhr.results[i].mid;
+		row.appendChild(mid);
 
-		var do_best = document.createElement('td');
-		do_best.textContent = xhr.results[i].do_best;
-		row.appendChild(do_best);
+		var seeds = document.createElement('td');
+		seeds.textContent = xhr.results[i].seeds;
+		row.appendChild(seeds);
 
-		//date.textContent = xhr.results[i].date.slice(0,10);
-		var sunlight = document.createElement('td');
-		sunlight.textContent = xhr.results[i].sunlight;
-		row.appendChild(sunlight);
+		var family = document.createElement('td');
+		family.textContent = xhr.results[i].family;
+		row.appendChild(family);
 
-		var water = document.createElement('td');
-		water.textContent = xhr.results[i].water;
-		row.appendChild(water);
-
-		var area = document.createElement('td');
-		area.textContent = xhr.results[i].area;
-		row.appendChild(area);
 
 		// delete button, edit button, hidden key forms
 		var dcell = document.createElement('td');
+		dcell.style.visibility="hidden";
 		var form = document.createElement('form');
 		var button = document.createElement('button');
 		button.textContent = "X";
@@ -328,14 +280,11 @@ function updateRow(e){
 	var req = new XMLHttpRequest();
 	var payload = {
 		"id":id,
-		"name":document.getElementById("u-name").value,
-		"fid":document.getElementById("u-fid").value,
-		"do_best":document.getElementById("u-do_best").value,
-		"sunlight":document.getElementById("u-sunlight").value,
-		"water":document.getElementById("u-water").value,
-		"area":document.getElementById("u-area").value
+		"bid":document.getElementById("u-bid").value,
+		"mid":document.getElementById("u-mid").value,
+		"sunlight":document.getElementById("u-sunlight").value
 	};
-	req.open('PUT', "http://52.36.73.75:3000/seeds/"+payload.id, true);
+	req.open('PUT', "http://52.36.73.75:3000/affects/"+payload.id, true);
 	//req.open('POST', "http://httpbin.org/post", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
@@ -367,17 +316,11 @@ function refreshRow( xhr ) {
 	var row = document.getElementById(id);
 	//console.log(row);
 	var current = row.firstChild;
-	current.textContent = xhr.results[0].name;
+	current.textContent = xhr.results[0].bid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].fid;
+	current.textContent = xhr.results[0].mid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].do_best;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].sunlight
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].water;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].area;
+	current.textContent = xhr.results[0].sunlight;
 	//remove update form
 	var updatediv = document.getElementById('update');
 	if ( updatediv.firstChild ){
@@ -397,7 +340,7 @@ function removeRow(event) {
 	var id = row.getAttribute('id');
 	//console.log("removing row id: ",id);
 	var req = new XMLHttpRequest();
-	req.open('DELETE', "http://52.36.73.75:3000/seeds/"+id, true);
+	req.open('DELETE', "http://52.36.73.75:3000/affects/"+id, true);
 	req.addEventListener('load',function(){
 					if ( req.status >= 200 && req.status < 400 ) {
 						var xhr = JSON.parse(req.responseText);
@@ -418,19 +361,13 @@ function removeRow(event) {
 }
 
 function updateCheck(){
-				var c = document.getElementById("u-name");
-				var d = document.getElementById("u-fid");
-				var e = document.getElementById("u-do_best");
-				var f = document.getElementById("u-sunlight");
-				var g = document.getElementById('u-water');
-				var h = document.getElementById('u-area');
+				var c = document.getElementById("u-bid");
+				var d = document.getElementById("u-mid");
+				var g = document.getElementById("u-sunlight");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
 						!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -438,19 +375,13 @@ function updateCheck(){
 }
 
 function addCheck(){
-				var c = document.getElementById("name");
-				//var d = document.getElementById("fid");
-				var e = document.getElementById("do_best");
-				var f = document.getElementById("sunlight");
-				var g = document.getElementById('water');
-				var h = document.getElementById('area');
+				var c = document.getElementById("bid");
+				var d = document.getElementById("mid");
+				var g = document.getElementById("sunlight");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
-						//!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
+						!d.check.isValid(d.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -473,16 +404,13 @@ function bindPost(){
 					var req = new XMLHttpRequest();
 
 					var payload = {
-						"name":document.getElementById("name").value,
-						"fid":document.getElementById("fid").value,
-						"do_best":document.getElementById("do_best").value,
-						"sunlight":document.getElementById("sunlight").value,
-						"water":document.getElementById("water").value,
-						"area":document.getElementById("area").value 
+						"bid":document.getElementById("bid").value,
+						"mid":document.getElementById("mid").value,
+						"sunlight":document.getElementById("sunlight").value
 					};
 
 					//console.log(payload);
-					req.open('POST', "http://52.36.73.75:3000/seeds", true);
+					req.open('POST', "http://52.36.73.75:3000/affects", true);
 					//req.open('POST', "http://httpbin.org/post", true);
 					req.setRequestHeader('Content-Type','application/json');
 					req.addEventListener('load',function(){
@@ -506,7 +434,7 @@ function bindPost(){
 };
 
 function clearInput() {
-var input = ['name','fid','do_best','sunlight','water','area'];
+  var input = ['bid', 'mid','sunlight'];
 	input.forEach( function(form) {
 		document.getElementById(form).value = "";
 	});

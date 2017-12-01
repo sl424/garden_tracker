@@ -1,15 +1,17 @@
- //Full texts		id	fid		name	do_best		sunlight	water		areai
+ //Full texts		id	fid		name	do_best		date_planted	water		areai
 var msg = document.getElementById('messages');
-var input = ['name','fid','do_best','sunlight','water','area'];
-var ph = ['name', 'fid', 'do_best-month', 'sunlight-hours','water-in','area-in2' ];
-var type = ['string', 'string', 'string', 'number', 'number', 'number'];
 
-var newhead = ['name','fid','do_best','sunlight','water','area','action'];
-var fhead = ['name','fid','do_best','sunlight','water','area',''];
-var update = ['u-name', 'u-fid','u-do_best','u-sunlight','u-water', 'u-area'];
-var body = ['id','name','fid','do_best','sunlight','water','area'];
-var search = ['s-name', 's-fid','s-do_best','s-sunlight','s-water', 's-area'];
-var numcols = 7;
+var input = ['bid', 'sid','date_planted'];
+var ph = ['bid', 'sid','YYYY-MM-DD'];
+var type = ['string', 'string', 'number'];
+
+var newhead = ['bid', 'sid','date_planted','action'];
+var fhead = ['bid', 'sid','date_planted',''];
+
+var body = ['id','bid', 'sid','date_planted'];
+var update = ['u-bid', 'u-sid','u-date_planted'];
+var search = ['s-bid', 's-sid','s-date_planted'];
+var numcols = 4;
 //
 // Following constructor were modified from editablegrid project
 // source 
@@ -19,10 +21,7 @@ var numcols = 7;
 var valid = [ 
 		new StringValidator(), 
 		new StringValidator(), 
-		new StringValidator(), 
-		new NumberCellValidator("integer"),
-		new NumberCellValidator("float"),
-		new NumberCellValidator("integer")
+		new DateCellValidator()
 		];
 
 /****************************************
@@ -47,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function(){
 // row data to populate the input fields
 ****************************************/
 function addForm(divfield,head,row){
-	var numcols = 6;
+	var numcols = 3;
 	var form = document.createElement('form');
 	form.method = "post";
 	if ( row )
@@ -57,17 +56,16 @@ function addForm(divfield,head,row){
 	//form.setAttribute('method',"post");
 	if ( row )
 		var current = row.firstChild;
-
 	for ( var i = 0; i < numcols; i++ ) {
 		var input = document.createElement("input");
 
-		if (head[i] == 'fid' || head[i] == 'u-fid') { 
+		if (head[i] == 'bid' || head[i] == 'u-bid') { 
 			input = document.createElement("select");
-			setOption(input, 'family', row ? current.textContent : '');
+			setOption(input, 'beds', row ? current.textContent : '');
 		}
-		if (head[i] == 'do_best' || head[i] == 'u-do_best') { 
+		if (head[i] == 'sid' || head[i] == 'u-sid') { 
 			input = document.createElement("select");
-			setOption(input, 'month', row ? current.textContent : '' );
+			setOption(input, 'seeds', row ? current.textContent : '' );
 		}
 
 		//assign type to classname to format input width
@@ -76,8 +74,6 @@ function addForm(divfield,head,row){
 		input.id = head[i];
 		input.placeholder = ph[i];
 		//assign validator function to each input field
-		//
-
 		input.check = valid[i];
 		if (row) {
 			input.value = current.textContent;
@@ -87,7 +83,6 @@ function addForm(divfield,head,row){
 	}
 	divfield.appendChild(form);
 }
-
 
 function setOption(el,tname,defaultval){
 	var req = new XMLHttpRequest();
@@ -114,12 +109,11 @@ function setOption(el,tname,defaultval){
 	}
 }
 
-
 /****************************************
 // create table header and assign class name to each column
 ****************************************/
-var cols = ['one','two','three','four','five','six','seven'];
-var numcols = 7;
+var cols = ['one','two','three','four'];
+var numcols = 4;
 var table = document.createElement('table');
 
 var row = document.createElement('tr');
@@ -149,14 +143,11 @@ function searchButton(e){
 	if (e.keyCode == 13) {
 	var req = new XMLHttpRequest();
 	var payload = {
-		"name":document.getElementById("s-name").value,
-		"fid":document.getElementById("s-fid").value,
-		"do_best":document.getElementById("s-do_best").value,
-		"sunlight":document.getElementById("s-sunlight").value,
-		"water":document.getElementById("s-water").value,
-		"area":document.getElementById("s-area").value
+		"bid":document.getElementById("s-bid").value,
+		"sid":document.getElementById("s-sid").value,
+		"date_planted":document.getElementById("s-date_planted").value
 	};
-	req.open('POST', "http://52.36.73.75:3000/seeds/all", true);
+	req.open('POST', "http://52.36.73.75:3000/planted/all", true);
 	//req.open('POST', "http://httpbin.org/post", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
@@ -210,7 +201,7 @@ document.addEventListener('DOMContentLoaded', bindButton);
 function bindButton(){
 	var req = new XMLHttpRequest();
 	//var payload = {};
-	req.open("GET", "http://52.36.73.75:3000/seeds/all", true);
+	req.open("GET", "http://52.36.73.75:3000/planted/all", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
 		if ( req.status >= 200 && req.status < 400 ) {
@@ -237,30 +228,17 @@ function addRow(xhr){
 		row.className = 'data';
 		row.setAttribute('id',xhr.results[i].id);
 
-		var name = document.createElement('td');
-		name.textContent = xhr.results[i].name;
-		row.appendChild(name);
+		var bid = document.createElement('td');
+		bid.textContent = xhr.results[i].bid;
+		row.appendChild(bid);
 
-		var fid = document.createElement('td');
-		fid.textContent = xhr.results[i].fid;
-		row.appendChild(fid);
+		var sid = document.createElement('td');
+		sid.textContent = xhr.results[i].sid;
+		row.appendChild(sid);
 
-		var do_best = document.createElement('td');
-		do_best.textContent = xhr.results[i].do_best;
-		row.appendChild(do_best);
-
-		//date.textContent = xhr.results[i].date.slice(0,10);
-		var sunlight = document.createElement('td');
-		sunlight.textContent = xhr.results[i].sunlight;
-		row.appendChild(sunlight);
-
-		var water = document.createElement('td');
-		water.textContent = xhr.results[i].water;
-		row.appendChild(water);
-
-		var area = document.createElement('td');
-		area.textContent = xhr.results[i].area;
-		row.appendChild(area);
+		var date_planted = document.createElement('td');
+		date_planted.textContent = xhr.results[i].date_planted.slice(0,10);
+		row.appendChild(date_planted);
 
 		// delete button, edit button, hidden key forms
 		var dcell = document.createElement('td');
@@ -328,14 +306,11 @@ function updateRow(e){
 	var req = new XMLHttpRequest();
 	var payload = {
 		"id":id,
-		"name":document.getElementById("u-name").value,
-		"fid":document.getElementById("u-fid").value,
-		"do_best":document.getElementById("u-do_best").value,
-		"sunlight":document.getElementById("u-sunlight").value,
-		"water":document.getElementById("u-water").value,
-		"area":document.getElementById("u-area").value
+		"bid":document.getElementById("u-bid").value,
+		"sid":document.getElementById("u-sid").value,
+		"date_planted":document.getElementById("u-date_planted").value
 	};
-	req.open('PUT', "http://52.36.73.75:3000/seeds/"+payload.id, true);
+	req.open('PUT', "http://52.36.73.75:3000/planted/"+payload.id, true);
 	//req.open('POST', "http://httpbin.org/post", true);
 	req.setRequestHeader('Content-Type','application/json');
 	req.addEventListener('load',function(){
@@ -367,17 +342,11 @@ function refreshRow( xhr ) {
 	var row = document.getElementById(id);
 	//console.log(row);
 	var current = row.firstChild;
-	current.textContent = xhr.results[0].name;
+	current.textContent = xhr.results[0].bid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].fid;
+	current.textContent = xhr.results[0].sid;
 	current = current.nextSibling;
-	current.textContent = xhr.results[0].do_best;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].sunlight
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].water;
-	current = current.nextSibling;
-	current.textContent = xhr.results[0].area;
+	current.textContent = xhr.results[0].date_planted.slice(0,10);
 	//remove update form
 	var updatediv = document.getElementById('update');
 	if ( updatediv.firstChild ){
@@ -397,7 +366,7 @@ function removeRow(event) {
 	var id = row.getAttribute('id');
 	//console.log("removing row id: ",id);
 	var req = new XMLHttpRequest();
-	req.open('DELETE', "http://52.36.73.75:3000/seeds/"+id, true);
+	req.open('DELETE', "http://52.36.73.75:3000/planted/"+id, true);
 	req.addEventListener('load',function(){
 					if ( req.status >= 200 && req.status < 400 ) {
 						var xhr = JSON.parse(req.responseText);
@@ -418,19 +387,13 @@ function removeRow(event) {
 }
 
 function updateCheck(){
-				var c = document.getElementById("u-name");
-				var d = document.getElementById("u-fid");
-				var e = document.getElementById("u-do_best");
-				var f = document.getElementById("u-sunlight");
-				var g = document.getElementById('u-water');
-				var h = document.getElementById('u-area');
+				var c = document.getElementById("u-bid");
+				var d = document.getElementById("u-sid");
+				var g = document.getElementById("u-date_planted");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
 						!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -438,19 +401,13 @@ function updateCheck(){
 }
 
 function addCheck(){
-				var c = document.getElementById("name");
-				//var d = document.getElementById("fid");
-				var e = document.getElementById("do_best");
-				var f = document.getElementById("sunlight");
-				var g = document.getElementById('water');
-				var h = document.getElementById('area');
+				var c = document.getElementById("bid");
+				var d = document.getElementById("sid");
+				var g = document.getElementById("date_planted");
 				//if ( !document.getElementById("name").value ) {
 				//if ( !c.check.isValid(c.value)) {
 				if ( !c.check.isValid(c.value) || 
-						//!d.check.isValid(d.value) || 
-						!e.check.isValid(e.value) || 
-						!f.check.isValid(f.value) || 
-						!h.check.isValid(h.value) || 
+						!d.check.isValid(d.value) || 
 						!g.check.isValid(g.value) ) {
 							return 1;
 						}
@@ -473,16 +430,13 @@ function bindPost(){
 					var req = new XMLHttpRequest();
 
 					var payload = {
-						"name":document.getElementById("name").value,
-						"fid":document.getElementById("fid").value,
-						"do_best":document.getElementById("do_best").value,
-						"sunlight":document.getElementById("sunlight").value,
-						"water":document.getElementById("water").value,
-						"area":document.getElementById("area").value 
+						"bid":document.getElementById("bid").value,
+						"sid":document.getElementById("sid").value,
+						"date_planted":document.getElementById("date_planted").value
 					};
 
 					//console.log(payload);
-					req.open('POST', "http://52.36.73.75:3000/seeds", true);
+					req.open('POST', "http://52.36.73.75:3000/planted", true);
 					//req.open('POST', "http://httpbin.org/post", true);
 					req.setRequestHeader('Content-Type','application/json');
 					req.addEventListener('load',function(){
@@ -506,7 +460,7 @@ function bindPost(){
 };
 
 function clearInput() {
-var input = ['name','fid','do_best','sunlight','water','area'];
+  var input = ['bid', 'sid','date_planted'];
 	input.forEach( function(form) {
 		document.getElementById(form).value = "";
 	});

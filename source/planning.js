@@ -42,12 +42,13 @@ module.exports = function(){
 		}); 
 	}
 
-	function getAffects(res, context, complete){
+	function getPlannings(res, context, complete){
 		/*
 		var sqlstm = 'SELECT s.id, s.name, f.name as fid, m.name as do_best, s.sunlight, s.water, s.area FROM seeds s INNER JOIN family f ON s.fid=f.id INNER JOIN month m ON s.do_best=m.id';
 		mysql.pool.query(sqlstm,
 		*/
-		mysql.pool.query('SELECT a.id, b.name as bid, m.name as mid, sunlight FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id',
+		var sqlstm = 'SELECT a.id, b.name as bid, m.name as mid, s.name as seeds, f.name as family FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id INNER JOIN seeds s ON s.do_best=m.id INNER JOIN family f ON s.fid=f.id where s.sunlight < a.sunlight';
+		mysql.pool.query(sqlstm,
 				function(err, rows, fields){
 			if(err){                                                         
 				res.status(400);
@@ -76,11 +77,11 @@ module.exports = function(){
 		fin(sqlstm);
 	}
 
-	function postAffects(res, req, context, complete){
-		var sqlstm = 'select * from (SELECT a.id, b.name as bid, m.name as mid, sunlight FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id) as tmp1';
+	function postPlannings(res, req, context, complete){
+		var sqlstm = 'select * from (SELECT a.id, b.name as bid, m.name as mid, s.name as seeds, f.name as family FROM affects a INNER JOIN beds b ON a.bid=b.id INNER JOIN month m ON a.mid=m.id INNER JOIN seeds s ON s.do_best=m.id INNER JOIN family f ON s.fid=f.id where s.sunlight < a.sunlight) as tmp1';
 		joinstm(sqlstm, req, fin);
 		function fin(sqlstm2){
-			console.log(sqlstm2);
+			//console.log(sqlstm2);
 			mysql.pool.query(sqlstm2,
 					function(err, rows, fields){
 						if(err){                                                         
@@ -154,14 +155,14 @@ module.exports = function(){
 
 router.get('/',function(req,res){
 	var context = {};
-	context.jsscript = "js-affects.js";
-	context.header = 'affects';
+	context.jsscript = "js-planning.js";
+	context.header = 'plan your garden';
   res.render('table',context);
 });
 
 router.get('/all',function(req, res,next){
 	var context= {};
-	getAffects(res, context, complete);
+	getPlannings(res, context, complete);
 	function complete(){
     //res.render('garden', context);
 		res.json(context);
@@ -171,7 +172,7 @@ router.get('/all',function(req, res,next){
 
 router.post('/all',function(req, res,next){
 	var context= {};
-	postAffects(res, req, context, complete);
+	postPlannings(res, req, context, complete);
 	function complete(){
     //res.render('garden', context);
 		res.json(context);

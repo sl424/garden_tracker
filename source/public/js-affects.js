@@ -1,13 +1,15 @@
  //Full texts		id	fid		name	do_best		sunlight	water		areai
 var msg = document.getElementById('messages');
+
 var input = ['bid', 'mid','sunlight'];
 var ph = ['bid', 'mid','sunlight-hrs'];
 var type = ['string', 'string', 'number'];
 
 var newhead = ['bid', 'mid','sunlight','action'];
 var fhead = ['bid', 'mid','sunlight',''];
-var update = ['u-bid', 'u-mid','u-sunlight'];
+
 var body = ['id','bid', 'mid','sunlight'];
+var update = ['u-bid', 'u-mid','u-sunlight'];
 var search = ['s-bid', 's-mid','s-sunlight'];
 var numcols = 4;
 //
@@ -56,6 +58,16 @@ function addForm(divfield,head,row){
 		var current = row.firstChild;
 	for ( var i = 0; i < numcols; i++ ) {
 		var input = document.createElement("input");
+
+		if (head[i] == 'bid' || head[i] == 'u-bid') { 
+			input = document.createElement("select");
+			setOption(input, 'beds', row ? current.textContent : '');
+		}
+		if (head[i] == 'mid' || head[i] == 'u-mid') { 
+			input = document.createElement("select");
+			setOption(input, 'month', row ? current.textContent : '' );
+		}
+
 		//assign type to classname to format input width
 		input.className = type[i];
 		input.type = "text";
@@ -70,6 +82,31 @@ function addForm(divfield,head,row){
 		form.appendChild(input)
 	}
 	divfield.appendChild(form);
+}
+
+function setOption(el,tname,defaultval){
+	var req = new XMLHttpRequest();
+	req.open("GET", "http://52.36.73.75:3000/"+tname+"/all", true);
+	req.setRequestHeader('Content-Type','application/json');
+	req.addEventListener('load',function(){
+		if ( req.status >= 200 && req.status < 400 ) {
+			var xhr = JSON.parse(req.responseText);
+			fillOptions(xhr);
+		}
+		else{ console.log('Error',+ req.statusText);
+		var msg = document.getElementById('messages');
+		msg.textContent = req.statusText;}
+	});
+	req.send(null);
+
+	function fillOptions(xhr){
+		if (defaultval){
+			el.options.add( new Option(defaultval, defaultval) );
+		}
+		for ( var i = 0; i < xhr.results.length; i++ ) {
+			el.options.add( new Option(xhr.results[i].name,xhr.results[i].name) );
+		}
+	}
 }
 
 /****************************************
@@ -423,7 +460,7 @@ function bindPost(){
 };
 
 function clearInput() {
-var input = ['bid, mid','sunlight'];
+  var input = ['bid', 'mid','sunlight'];
 	input.forEach( function(form) {
 		document.getElementById(form).value = "";
 	});
