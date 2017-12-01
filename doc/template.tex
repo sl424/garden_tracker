@@ -76,8 +76,8 @@
 %----------------------------------------------------------------------------------------
 
 \definecolor{MyDarkGreen}{rgb}{0.0,0.4,0.0} % This is the color used for comments
-\lstloadlanguages{Python} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
-\lstset{language=Python, % Use Perl in this example
+\lstloadlanguages{sql} % Load Perl syntax for listings, for a list of other languages supported see: ftp://ftp.tex.ac.uk/tex-archive/macros/latex/contrib/listings/listings.pdf
+\lstset{language=sql, % Use Perl in this example
         frame=single, % Single frame around code
         basicstyle=\small\ttfamily, % Use small true type font
         keywordstyle=[1]\color{Blue}\bf, % Perl functions bold and blue
@@ -202,30 +202,38 @@
 \begin{document}
 
 \homeworkSection{Outline}
-I propose a database to track the plants grown in the backyard garden. There will
-be several raised beds and hundreds of seeds. I hope it can be used to
-streamline planting and maximize productivity of the garden.\\
+This is a database to track the plants grown in one's backyard garden. 
+	    There could be many raised beds and hundreds of seeds to track.    
+	    I hope it can be used to streamline planting and maximize          
+	    productivity of the garden so you can figure out what to plant each
+	    month.                                                             
+	    You can follow to the link to each of the table to interact with   
+	    the database and use the planning page to schedule the garden      
+	    plants.
 
 
 \homeworkSection{Database Outline}
 
 Entities:
 \begin{itemize}
-\item Beds - location, soil type, sunlight, water, size, season, 
-\item Seeds - seed spacing, row spacing, cycle, sunlight, soil, water, harvest
-\item Season - Month, avg high, avg low, precipitation
-\item Plant Family - name, alias
+	\item Beds - id, name, area
+	\item Seeds - id, name, do\_best, sunlight, area, water
+	\item Month - id, name, avg\_high, avg\_low, water
+	\item Family - id, name, alias
 \end{itemize}
 
 Relationship:
 \begin{itemize}
-	\item many-to-many: seeds can be planted in any suitable beds and a bed
-		can contain multiple different plants.
-	\item one-to-many: each seed is from a plant family and a family can
-		have multiple seeds.
-	\item one-to-one: each seed is best planted in the appropriate season.
-	\item many-to-many: track the history of each beds and the plant family
-		to maximize crop rotation
+	\item many-to-many: seeds can be planted in at least one suitable beds and a bed
+		can contain multiple different plants. This can also be used to
+		track plants and not plant the same thing in the same bed year
+		after year. 
+	\item one-to-many: each seed must come from a plant family and a family can
+		have multiple seeds. 
+	\item one-to-many: each seed is best planted in a specific month but a
+		month can be the best time for many plants to grow.
+	\item many-to-many: each month affects the sunlight each bed gets over
+		the course of the year.
 \end{itemize}
 
 \homeworkSection{ER Diagram}
@@ -236,16 +244,20 @@ Relationship:
 \includegraphics[scale=1]{schema}
 
 \homeworkSection{Data Definition Queries}
-%\lstinputlisting{data-def.txt}
+\lstinputlisting{data_def.sql}
 
 \homeworkSection{Data Manipulation Queries}
-%\lstinputlisting{data-selection.txt}
+\lstinputlisting{data_selection.sql}
 
 
-\homeworkSection{website functionality}
-\homeworkSection{style}
+
+
+
+
 
 \begin{comment}
+\homeworkSection{website functionality}
+\homeworkSection{style}
 \lstinputlisting{debug2.txt}
 \lstinputlisting[language={C}]{refactor.txt}
 \begin{SCfigure}[2.0][h]

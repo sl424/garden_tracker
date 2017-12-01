@@ -96,7 +96,7 @@ values
 insert into seeds(fid, name, do_best, sunlight, water, area)
 values
 ((select id from family where name='Solanaceae'), 'tomato', 
-	(select id from month where name='apr'),
+	(select id from month where name='jan'),
 	'8', '0.2', '432'),
 ((select id from family where name='Fabaceae'), 'pea', 
 	(select id from month where name='may'),

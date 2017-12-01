@@ -8,11 +8,10 @@ graph ER {
 	node [shape=ellipse]; {node [label=<<u>id</u>>] b_id; s_id; m_id; f_id;}
 	node [shape=ellipse]; {node [label="name"] b_name; s_name; m_name; f_name;}
 	node [shape=ellipse]; {node [label="sunlight"] b_sunlight; s_sunlight;}
-	node [shape=ellipse]; {node [label="water"] s_water; m_water;}
 	node [shape=ellipse]; {node [label="area"] b_area; s_area;}
-	node [shape=ellipse]; {node [label="days"] s_harvest;}
 	node [shape=ellipse]; {node [label="avg_low"] m_avg_low;}
 	node [shape=ellipse]; {node [label="avg_high"] m_avg_high;}
+	node [shape=ellipse]; {node [label="water"] m_water; s_water;}
 	node [shape=ellipse]; {node [label="alias"] f_alias;}
 	node [shape=ellipse]; {node [label="date"] bs_date; }
 #	node [shape=ellipse]; {node [label="date"] bs_date; bf_date;}
@@ -26,10 +25,10 @@ graph ER {
 # seeds has area, sunlight, soil. water, harvest
 	seeds -- s_id
 	seeds -- s_name
+	seeds -- do_best
 	seeds -- s_sunlight
-	seeds -- s_water
 	seeds -- s_area
-	seeds -- s_harvest
+	seeds -- s_water
 
 # month has avg high, avg low, precipitation
 	month -- m_id
@@ -67,7 +66,7 @@ graph ER {
 # a purchase is made by exactly one customer
 	node [shape=diamond,style=filled,color=lightgrey]; 
 	node [label="do_best"] sm
-	sm -- seeds [label="1",color="black:invis:black"]
+	sm -- seeds [label="m",color="black:invis:black"]
 	sm -- month [label="1"]
 
 # a beds can have many family of crop
@@ -81,7 +80,7 @@ graph ER {
 # the month affects the condiiton of the beds
 	node [shape=diamond,style=filled,color=lightgrey]; 
 	node [label="affects"] bm
-	bm -- beds [label="m"]
+	bm -- beds [label="m",color="black:invis:black"]
 	bm -- month [label="n",color="black:invis:black"]
 	bm -- b_sunlight
 }
@@ -116,3 +115,8 @@ node [shape=ellipse]; {node [label=<<u>name</u>>] name0; name1; name2;}
 	customers; 
 	purchases; 
 	You; 
+
+
+
+	node [shape=ellipse]; {node [label="water"] s_water; m_water;}
+	node [shape=ellipse]; {node [label="days"] s_harvest;}

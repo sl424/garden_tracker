@@ -10,7 +10,7 @@ module.exports = function(){
 						res.status(400);
 						res.write(JSON.stringify(err));                              
 						res.end();                                                     
-					}
+				}
 					if (rows[0]) { context.family = rows[0].id; } else {context.month='NULL';}
 					complete();
 				});

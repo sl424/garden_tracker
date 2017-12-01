@@ -13,13 +13,12 @@ entity "seeds" {
 	+ <u>id</u> [PK]
 	--
 	+ fid (family_id) [FK]
-	+ mid (month_id) [FK]
+	+ do_best (month_id) [FK]
 	--
 	name
-	area
 	sunlight
 	water
-	days
+	area
 }
 
 entity "month" {
@@ -39,6 +38,8 @@ entity "family"{
 }
 
 entity "affects" <<(R,olive)>>{
+	+ <u>id</u> [PK]
+	--
 	bid (beds_id) [FK]
 	mid (month_id) [FK]
 	--
@@ -47,6 +48,8 @@ entity "affects" <<(R,olive)>>{
 
 
 entity "planted" <<(R,olive)>>{
+	+ <u>id</u> [PK]
+	--
 	bid (beds_id) [FK]
 	sid (seeds_id) [FK]
 	--
@@ -56,7 +59,7 @@ entity "planted" <<(R,olive)>>{
 
 beds "m" ||-|| "n" seeds : planted
 beds "m" ||-|| "n" month : affects
-seeds "1" --* "m" family : member_of
+seeds "m" --* "1" family : member_of
 seeds --- month : do_best 
 
 @enduml

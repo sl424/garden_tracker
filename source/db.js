@@ -24,6 +24,7 @@ var owaID = key.owaID;
 var appID = key.appID;
 var city = 'Corvallis';
 var state = 'OR';
+
 app.use('/seeds', require('./seeds.js')); 
 app.use('/beds', require('./beds.js')); 
 app.use('/family', require('./family.js')); 
@@ -36,114 +37,6 @@ app.use('/planning', require('./planning.js'));
 
 app.get('/',function(req,res){
   res.render('home');
-});
-
-/*
-app.get('/reset-table',function(req,res,next){
-  var context = {};
-  mysql.pool.query("DROP TABLE IF EXISTS workouts", function(err){ //replace your connection pool with the your variable containing the connection pool
-    var createString = "CREATE TABLE workouts("+
-    "id INT PRIMARY KEY AUTO_INCREMENT,"+
-    "name VARCHAR(255) NOT NULL,"+
-    "reps INT,"+
-    "weight INT,"+
-    "date DATE,"+
-    "lbs BOOLEAN)";
-    mysql.pool.query(createString, function(err){
-      context.results = "Table reset";
-      res.render('test',context);
-    })                                                                    
-  });
-});
-*/
-/*
-
-app.get('/show',function(req,res,next){
-  var context = {};
-  mysql.pool.query('SELECT * FROM seeds', function(err, rows, fields){
-    if(err){
-      next(err);
-      return;
-    }
-    //context.results = JSON.stringify(rows);
-    context.results = rows;
-		res.json(context);
-  });
-});
-	//mysql.pool.query('INSERT INTO workouts (name,reps,weight,date,lbs) values (?)', 
-
-app.post('/add',function(req,res,next){
-  var context = {};
-	mysql.pool.query('INSERT INTO seeds (`fid`,`name`,`do_best`,`sunlight`,`water`,`area`) values (?,?,?,?,?,?)', 
-		[req.body.fid, req.body.name,req.body.do_best, req.body.sunlight, req.body.water, req.body.area ], 
-		function(err, result){
-		if ( err ) {
-			next( err );
-			return;
-		}
-		if ( result.affectedRows ){
-			mysql.pool.query( 'SELECT * FROM seeds WHERE id=?',
-				[result.insertId],
-				function(err, rows, fields){
-				if ( err ) {
-					next( err );
-					return;
-				}
-			context.results = rows;
-			res.json(context);
-			//console.log(rows);
-			});
-		}
-	});
-});
-
-app.post('/update',function(req,res,next){
-  var context = {};
-  mysql.pool.query("UPDATE seeds SET fid=?, name=?, do_best=?, sunlight=?, water= ?, area=? WHERE id=? ",
-		[req.body.fid, req.body.name,req.body.do_best, req.body.sunlight, req.body.water, req.body.area, req.body.id ], 
-    function(err, result){
-    if(err){
-      next(err);
-      return;
-    }
-		if ( result.affectedRows ){
-			mysql.pool.query( 'SELECT * FROM seeds WHERE id=?',
-				[req.body.id],
-			//	[result.insertId],
-				function(err, rows, fields){
-				if ( err ) {
-					next( err );
-					return;
-				}
-			context.results = rows;
-			res.json(context);
-			//console.log(rows);
-			console.log(context);
-			});
-		}
-	});
-});
-
-
-app.get('/remove',function(req,res,next){
-  var context = {};
-  mysql.pool.query("delete from seeds WHERE id=? ",
-    [req.query.id],
-    function(err, result){
-			console.log(result);
-    if(err){
-      next(err);
-      return;
-    }
-    context.results = "Deleted " + result.affectedRows + " rows.";
-		console.log(context);
-		res.send(JSO.stringify(context));
-  });
-});
-*/
-
-app.get('/random',function(req,res){
-  res.render('random', getRandObj() );
 });
 
 app.use(function(req,res){
