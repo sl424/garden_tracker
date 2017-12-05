@@ -1,7 +1,20 @@
 @startuml
+class Foo {
+	+ field1
+	+ field2
+}
+
+class Bar {
+	+ field3
+	+ field4
+}
+
+Foo::field1 --> Bar::field3 : foo
+Foo::field2 --> Bar::field4 : bar
+
+@enduml
+
 skinparam monochrome true
-
-
 
 entity "beds" {
 	+ <u>id</u> [PK]
@@ -57,47 +70,11 @@ entity "planted" <<(R,olive)>>{
 	date
 }
 
-seeds::fid -[dotted]-> family::id
-seeds::do_best -[dotted]-> month::id
-
-affects::bid -[dotted]-> beds::id
-affects::mid -[dotted]->month::id
-
-planted::bid -[dotted]-> beds::id
-planted::sid -[dotted]-> seeds::id
-
-
-beds "m" ||- planted
-planted  -|| "n" seeds
-
-beds "m" ||- affects
-affects  -|| "n" month
-
-seeds "m" --* "1" family : member_of
-seeds --- month : do_best 
-
-
-@enduml
-
-' Make a dashed line, alternative syntax for ..&gt;
-(*) -[dashed]-> "Write outline"
- 
-' Make line bold and use color name
-"Write outline" -[bold,#green]-> "Find example"
- 
-' Only change the color with hexadecimal RGB code
-"Find example" -[#ff00ff]-> "Write blog"
- 
-' Order of line style and color can be reversed
-"Write blog" -[#6666ff,dashed]-> "Publish"
- 
-' Use dotted line style
-"Publish" -[dotted]-> (*)
-
-left to right direction
 
 beds "m" ||-|| "n" seeds : planted
 beds "m" ||-|| "n" month : affects
+seeds "m" --* "1" family : member_of
+seeds --- month : do_best 
 
 
 
